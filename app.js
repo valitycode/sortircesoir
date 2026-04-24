@@ -61,8 +61,25 @@ function profileName(p) {
   return `${p.first_name || ""} ${p.last_name || ""}`.trim() || p.username || "Utilisateur";
 }
 
-function openModal(id) { $(id).classList.add("show"); }
-function closeModal(id) { $(id).classList.remove("show"); }
+function openModal(id) {
+  $(id).classList.add("show");
+
+  // Quand on ouvre une discussion, on adapte l'affichage mobile
+  // et on cache la navigation du bas.
+  if (id === "chatModal") {
+    document.body.classList.add("chat-open");
+  }
+}
+
+function closeModal(id) {
+  $(id).classList.remove("show");
+
+  // Quand on ferme une discussion, on remet l'app normale.
+  if (id === "chatModal") {
+    document.body.classList.remove("chat-open");
+    currentConversation = null;
+  }
+}
 
 function setView(view) {
   $$(".view").forEach(v => v.classList.add("hidden"));
@@ -709,15 +726,31 @@ async function ensureConversation(friendId) {
 async function openConversation(conversationId) {
   const { data, error } = await supabaseClient
     .from("conversations")
-    .select(`*, user1:user1_id(id,first_name,last_name,username,avatar_url), user2:user2_id(id,first_name,last_name,username,avatar_url)`)
+    .select(`
+      *,
+      user1:user1_id(id,first_name,last_name,username,avatar_url),
+      user2:user2_id(id,first_name,last_name,username,avatar_url)
+    `)
     .eq("id", conversationId)
     .single();
-  if (error) return toast("Conversation introuvable.");
+
+  if (error) {
+    console.error(error);
+    return toast("Conversation introuvable.");
+  }
+
   currentConversation = data;
+
   const other = otherUser(data);
-  $("chatTitle").textContent = profileName(other);
+
+  $("chatTitle").textContent = other ? profileName(other) : "Discussion";
   $("chatSubtitle").textContent = other?.username ? `@${other.username}` : "";
+
+  // Ajoute une classe au body pour adapter l'affichage mobile
+  document.body.classList.add("chat-open");
+
   openModal("chatModal");
+
   await loadMessages(conversationId);
   await markConversationRead(conversationId);
 }
