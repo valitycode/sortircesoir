@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>SortirCeSoir</title>
+  <meta name="description" content="Trouve une idée de sortie locale en moins de 30 secondes." />
+  <meta name="theme-color" content="#ff6b35" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="SortirCeSoir" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' rx='28' fill='%23ff6b35'/%3E%3Ctext x='64' y='79' text-anchor='middle' font-size='56' font-family='Arial'%3E🌙%3C/text%3E%3C/svg%3E" />
+
+  <style>
+    :root{
+      --bg:#fff7ef;--card:#fff;--text:#201713;--muted:#7b6b61;--line:#f1ded2;
+      --primary:#ff6b35;--primary2:#ffb703;--danger:#e63946;--ok:#2a9d8f;
+      --shadow:0 18px 45px rgba(89,45,18,.12);--radius:24px;--bottom:86px;
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:radial-gradient(circle at top left,#ffe1c6 0,#fff7ef 34%,#fff 100%);color:var(--text);min-height:100vh}
+    button,input,select,textarea{font:inherit} button{cursor:pointer;border:0}
+    .app{max-width:1050px;margin:0 auto;min-height:100vh;padding:18px 16px calc(var(--bottom) + env(safe-area-inset-bottom))}
+    .shell{display:none}.shell.active{display:block;animation:fade .22s ease}
+    @keyframes fade{from{opacity:.25;transform:translateY(6px)}to{opacity:1;transform:none}}
+    .topbar{position:sticky;top:0;z-index:10;backdrop-filter:blur(18px);background:rgba(255,247,239,.82);border-bottom:1px solid rgba(241,222,210,.7);margin:-18px -16px 18px;padding:14px 16px 12px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:1.08rem}.logo{width:36px;height:36px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--primary),var(--primary2));box-shadow:0 10px 20px rgba(255,107,53,.25)}
+    .hero{background:linear-gradient(135deg,#29140e,#7d2d17 52%,#ff6b35);color:#fff;border-radius:32px;padding:24px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+    .hero:after{content:"";position:absolute;inset:auto -30px -60px auto;width:190px;height:190px;border-radius:50%;background:rgba(255,255,255,.14)}
+    h1,h2,h3{margin:0 0 10px} h1{font-size:clamp(2rem,8vw,4rem);line-height:.95;letter-spacing:-.05em} h2{font-size:1.45rem;letter-spacing:-.03em}.muted{color:var(--muted)}.hero .muted{color:#ffe2d6}
+    .grid{display:grid;gap:14px}.grid2{display:grid;gap:14px;grid-template-columns:1fr}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+    .card{background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:12px 16px;background:#2b1b14;color:#fff;font-weight:800;min-height:48px;transition:.18s transform,.18s opacity}
+    .btn:hover{transform:translateY(-1px)}.btn:disabled{opacity:.5;cursor:not-allowed}.btn.primary{background:linear-gradient(135deg,var(--primary),#ff8b45)}.btn.light{background:#fff;color:#2b1b14;border:1px solid var(--line)}.btn.ghost{background:#fff3e9;color:#7d2d17}.btn.danger{background:#ffe4e7;color:#b42330}
+    .field{display:grid;gap:7px;margin:10px 0}.field label{font-size:.85rem;font-weight:800;color:#5a4336}.input,select,textarea{width:100%;border:1px solid var(--line);background:#fff;border-radius:17px;padding:13px 14px;outline:none}.input:focus,select:focus,textarea:focus{border-color:#ff9a6a;box-shadow:0 0 0 4px rgba(255,107,53,.12)}textarea{min-height:90px;resize:vertical}
+    .authwrap{min-height:calc(100vh - 40px);display:grid;place-items:center}.authcard{width:min(460px,100%)}.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#fff3e9;padding:6px;border-radius:999px;margin:12px 0}.tabbtn{border-radius:999px;padding:10px;background:transparent;font-weight:800}.tabbtn.active{background:#fff;box-shadow:0 8px 16px rgba(125,45,23,.1)}
+    .avatar{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:950;overflow:hidden;flex:none}.avatar img{width:100%;height:100%;object-fit:cover}.avatar.big{width:96px;height:96px;font-size:1.65rem}
+    .row{display:flex;align-items:center;gap:12px}.between{display:flex;align-items:center;justify-content:space-between;gap:12px}.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;background:#fff3e9;color:#7d2d17;padding:7px 10px;font-size:.8rem;font-weight:800}.status{font-size:.78rem;border-radius:999px;padding:5px 9px;font-weight:900}.pending{background:#fff2bd;color:#795600}.accepted{background:#dff7ef;color:#08745f}.declined{background:#ffe0e5;color:#b42330}
+    .cards{display:grid;gap:14px}.outing-card{display:grid;gap:12px}.outing-head{display:flex;justify-content:space-between;gap:10px}.outing-title{font-weight:950;font-size:1.12rem}.why{background:#fff7ef;border-left:4px solid var(--primary);border-radius:14px;padding:10px;color:#5a4336}
+    .bottomnav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(1050px,100%);z-index:50;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:rgba(255,255,255,.82);backdrop-filter:blur(18px);border-top:1px solid var(--line)}
+    .navgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}.navbtn{position:relative;border-radius:18px;background:transparent;color:#7b6b61;padding:8px 4px;font-size:.75rem;font-weight:800}.navbtn span{display:block;font-size:1.25rem}.navbtn.active{background:#fff3e9;color:#7d2d17}.badge{position:absolute;top:3px;right:22%;background:var(--danger);color:#fff;min-width:18px;height:18px;border-radius:999px;font-size:.68rem;display:none;place-items:center;padding:0 5px}.badge.show{display:grid}
+    .notice{position:fixed;left:12px;right:12px;bottom:calc(var(--bottom) + 12px);z-index:60;background:#21140f;color:#fff;border-radius:22px;padding:14px 44px 14px 14px;box-shadow:var(--shadow)}.notice button{position:absolute;right:10px;top:10px;background:#fff;color:#21140f;border-radius:50%;width:28px;height:28px}
+    .hidden{display:none!important}.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:100;background:#21140f;color:#fff;border-radius:999px;padding:11px 15px;box-shadow:var(--shadow);max-width:92%;display:none}.toast.show{display:block;animation:fade .2s}
+    .conversation{border:1px solid var(--line);border-radius:20px;padding:12px;background:#fff;margin-bottom:10px}.msg{margin:8px 0;padding:10px 12px;border-radius:16px;background:#fff3e9;max-width:88%}.msg.mine{margin-left:auto;background:#23150f;color:#fff}.msg.system{background:#eef8f6;color:#096150;margin-left:auto;margin-right:auto;text-align:center;font-weight:800;font-size:.9rem}
+    .modal{position:fixed;inset:0;z-index:90;background:rgba(35,21,15,.42);display:none;align-items:flex-end}.modal.show{display:flex}.modal-card{background:#fff;width:100%;max-width:620px;margin:0 auto;border-radius:28px 28px 0 0;padding:18px;max-height:86vh;overflow:auto}
+    @media(min-width:760px){.grid2{grid-template-columns:1fr 1fr}.cards{grid-template-columns:repeat(2,1fr)}.modal{align-items:center}.modal-card{border-radius:28px}.app{padding-left:28px;padding-right:28px}.topbar{margin-left:-28px;margin-right:-28px;padding-left:28px;padding-right:28px}}
+  </style>
+</head>
+<body>
+  <div id="toast" class="toast"></div>
+  <div id="installTip" class="notice hidden"><b>Astuce :</b> ajoute SortirCeSoir à ton écran d’accueil pour l’utiliser comme une app.<br><small id="installText"></small><button aria-label="Fermer">×</button></div>
+
+  <main class="app">
+    <section id="authShell" class="authwrap shell active">
+      <div class="authcard card">
+        <div class="brand"><div class="logo">🌙</div> SortirCeSoir</div>
+        <h1 style="font-size:2.4rem;margin-top:18px">Sortir devient simple.</h1>
+        <p class="muted">Trouve une idée de sortie en moins de 30 secondes.</p>
+        <div class="tabs">
+          <button class="tabbtn active" data-auth-tab="login">Connexion</button>
+          <button class="tabbtn" data-auth-tab="signup">Inscription</button>
+        </div>
+        <form id="authForm">
+          <div class="field"><label>Email</label><input id="authEmail" class="input" type="email" required placeholder="toi@email.com"></div>
+          <div class="field"><label>Mot de passe</label><input id="authPassword" class="input" type="password" required minlength="6" placeholder="6 caractères minimum"></div>
+          <button id="authSubmit" class="btn primary" style="width:100%">Se connecter</button>
+        </form>
+        <p class="muted" style="font-size:.85rem">Après inscription, vérifie tes emails si la confirmation est activée dans Supabase.</p>
+      </div>
+    </section>
+
+    <section id="appShell" class="shell">
+      <div class="topbar between">
+        <div class="brand"><div class="logo">🌙</div> SortirCeSoir</div>
+        <div id="topAvatar" class="avatar"></div>
+      </div>
+
+      <section id="view-home" class="view">
+        <div class="hero">
+          <p class="muted" id="welcome">Bonsoir 👋</p>
+          <h1>Trouve une idée de sortie en moins de 30 secondes.</h1>
+          <div class="actions">
+            <button class="btn light" onclick="navigate('outings')">🔎 Trouver une sortie</button>
+            <button class="btn primary" onclick="surpriseMe()">✨ Surprends-moi</button>
+            <button class="btn ghost" onclick="openInviteModal()">💌 Inviter un ami</button>
+          </div>
+        </div>
+        <div class="grid2" style="margin-top:16px">
+          <div class="card"><h2>Dernières notifications</h2><div id="homeNotifications" class="grid"></div></div>
+          <div class="card"><h2>Ton mood du soir</h2><p class="muted">Réponds au questionnaire et on te propose les meilleures sorties locales.</p><button class="btn primary" onclick="navigate('outings')">Commencer</button></div>
+        </div>
+      </section>
+
+      <section id="view-outings" class="view hidden">
+        <h2>Questionnaire de sortie</h2>
+        <div class="card">
+          <div class="grid2">
+            <div class="field"><label>Ville</label><input id="qCity" class="input" placeholder="Paris, Lyon, Marseille..."></div>
+            <div class="field"><label>Humeur</label><select id="qMood"><option>chill</option><option>festif</option><option>romantique</option><option>culturel</option><option>insolite</option><option>sportif</option></select></div>
+            <div class="field"><label>Budget</label><select id="qBudget"><option>gratuit</option><option>moins de 10 €</option><option>10–30 €</option><option>30 €+</option></select></div>
+            <div class="field"><label>Avec qui</label><select id="qCompanion"><option>seul</option><option>amis</option><option>couple</option><option>famille</option></select></div>
+            <div class="field"><label>Moment</label><select id="qMoment"><option>maintenant</option><option>ce soir</option><option>ce week-end</option></select></div>
+            <div class="field"><label>Distance</label><select id="qTransport"><option>à pied</option><option>transport</option><option>voiture</option></select></div>
+          </div>
+          <button class="btn primary" onclick="loadRecommendations()">Voir les recommandations</button>
+        </div>
+        <div id="recommendations" class="cards" style="margin-top:16px"></div>
+      </section>
+
+      <section id="view-favorites" class="view hidden">
+        <div class="between"><h2>Favoris</h2><button class="btn ghost" onclick="loadFavorites()">↻ Actualiser</button></div>
+        <div id="favoritesList" class="cards"></div>
+      </section>
+
+      <section id="view-chat" class="view hidden">
+        <div class="between"><h2>Discussion</h2><button class="btn ghost" onclick="markAllRead()">Tout lu</button></div>
+        <div class="card">
+          <h3>Amis</h3>
+          <div class="row"><input id="friendSearch" class="input" placeholder="Rechercher un pseudo"><button class="btn primary" onclick="searchUser()">Chercher</button></div>
+          <div id="friendSearchResult"></div>
+          <div id="friendRequests" style="margin-top:12px"></div>
+          <div id="friendsList" style="margin-top:12px"></div>
+        </div>
+        <h3 style="margin-top:16px">Conversations</h3>
+        <div id="conversationsList"></div>
+      </section>
+
+      <section id="view-profile" class="view hidden">
+        <h2>Profil</h2>
+        <div class="card">
+          <div class="row" style="align-items:flex-start"><div id="profileAvatar" class="avatar big"></div><div><h2 id="profileName"></h2><p id="profileMeta" class="muted"></p><p id="profileBio"></p></div></div>
+          <form id="profileForm" style="margin-top:16px">
+            <div class="grid2">
+              <div class="field"><label>Prénom</label><input id="pFirst" class="input" required></div>
+              <div class="field"><label>Nom</label><input id="pLast" class="input" required></div>
+              <div class="field"><label>Pseudo</label><input id="pUsername" class="input" required></div>
+              <div class="field"><label>Ville</label><input id="pCity" class="input" required></div>
+            </div>
+            <div class="field"><label>Bio courte</label><textarea id="pBio"></textarea></div>
+            <div class="field"><label>Photo de profil</label><input id="pAvatarFile" class="input" type="file" accept="image/*"></div>
+            <div class="actions"><button class="btn primary">Enregistrer</button><button type="button" class="btn danger" onclick="logout()">Déconnexion</button></div>
+          </form>
+        </div>
+      </section>
+    </section>
+
+    <section id="inviteShell" class="authwrap shell">
+      <div class="authcard card">
+        <div class="brand"><div class="logo">💌</div> Invitation à sortir</div>
+        <div id="invitePublicContent" style="margin-top:16px"></div>
+      </div>
+    </section>
+  </main>
+
+  <nav id="bottomNav" class="bottomnav hidden">
+    <div class="navgrid">
+      <button class="navbtn active" data-view="home"><span>🏠</span>Accueil</button>
+      <button class="navbtn" data-view="outings"><span>✨</span>Sorties</button>
+      <button class="navbtn" data-view="favorites"><span>❤️</span>Favoris</button>
+      <button class="navbtn" data-view="chat"><span>💬</span>Discussion <b id="chatBadge" class="badge">0</b></button>
+      <button class="navbtn" data-view="profile"><span>👤</span>Profil</button>
+    </div>
+  </nav>
+
+  <div id="inviteModal" class="modal">
+    <div class="modal-card">
+      <div class="between"><h2>Inviter un ami</h2><button class="btn light" onclick="closeInviteModal()">×</button></div>
+      <div class="field"><label>Sortie</label><select id="inviteOuting"></select></div>
+      <div class="field"><label>Ami enregistré facultatif</label><select id="inviteFriend"><option value="">Lien public / invité sans compte</option></select></div>
+      <div class="field"><label>Prénom invité facultatif</label><input id="inviteGuest" class="input" placeholder="Emma"></div>
+      <div class="field"><label>Message</label><textarea id="inviteMessage" placeholder="Ça te dit ce soir ?"></textarea></div>
+      <button class="btn primary" onclick="createInvitation()">Créer le lien</button>
+      <div id="inviteLinkBox" class="hidden" style="margin-top:14px"><input id="inviteLink" class="input" readonly><div class="actions"><button class="btn ghost" onclick="copyInviteLink()">Copier le lien</button><button class="btn light" onclick="shareInviteLink()">Partager</button></div></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    /*************************************************************
+     * 1) REMPLACE ICI AVEC LES VALEURS DE TON PROJET SUPABASE
+     *************************************************************/
+    const SUPABASE_URL = "https://qjuhfvwqdvdcixsseept.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_LgSVWHH36Mtd_tXohem4UA_ZP2Rsaa7";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let currentUser = null, profile = null, outingsCache = [], friendsCache = [], realtimeChannel = null;
+    const $ = (id) => document.getElementById(id);
+
+    function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600); }
+    function initials(p){ return ((p?.first_name?.[0]||'')+(p?.last_name?.[0]||'')).toUpperCase() || '🙂'; }
+    function colorFromText(s='SC'){ let h=0; for(let i=0;i<s.length;i++) h=s.charCodeAt(i)+((h<<5)-h); return `hsl(${Math.abs(h)%360} 78% 48%)`; }
+    function avatarHTML(p, big=false){ if(p?.avatar_url) return `<div class="avatar ${big?'big':''}"><img src="${p.avatar_url}" alt=""></div>`; const ini=initials(p); return `<div class="avatar ${big?'big':''}" style="background:${colorFromText((p?.first_name||'')+(p?.last_name||''))}">${ini}</div>`; }
+    function setAvatar(el,p,big=false){ el.outerHTML = avatarHTML(p,big); }
+
+    document.querySelectorAll('[data-auth-tab]').forEach(btn=>btn.onclick=()=>{
+      document.querySelectorAll('[data-auth-tab]').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active'); $('authSubmit').textContent = btn.dataset.authTab==='signup'?'Créer mon compte':'Se connecter';
+    });
+    $('authForm').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const mode=document.querySelector('[data-auth-tab].active').dataset.authTab;
+      const email=$('authEmail').value.trim(), password=$('authPassword').value;
+      const res = mode==='signup'
+        ? await supabaseClient.auth.signUp({email,password})
+        : await supabaseClient.auth.signInWithPassword({email,password});
+      if(res.error) return toast(res.error.message);
+      toast(mode==='signup'?'Compte créé. Connecte-toi ou confirme ton email.':'Connecté');
+      await init();
+    });
+
+    async function init(){
+      const inviteToken = new URLSearchParams(location.search).get('invite');
+      if(inviteToken){ await showPublicInvite(inviteToken); return; }
+
+      const {data:{session}} = await supabaseClient.auth.getSession();
+      currentUser = session?.user || null;
+      $('authShell').classList.toggle('active', !currentUser);
+      $('appShell').classList.toggle('active', !!currentUser);
+      $('bottomNav').classList.toggle('hidden', !currentUser);
+      if(!currentUser) return;
+
+      await loadProfile();
+      await loadOutings();
+      await loadFriends();
+      await loadFriendRequests();
+      await loadConversations();
+      subscribeRealtime();
+      showInstallTip();
+      navigate('home');
+    }
+
+    supabaseClient.auth.onAuthStateChange((_event, session)=>{ currentUser = session?.user || null; setTimeout(init, 0); });
+
+    async function loadProfile(){
+      const {data,error}=await supabaseClient.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
+      if(error) toast(error.message);
+      profile=data;
+      if(!profile){ navigate('profile'); $('welcome').textContent='Crée ton profil 👋'; return; }
+      $('welcome').textContent=`Bonsoir ${profile.first_name || ''} 👋`;
+      $('qCity').value=profile.city||'';
+      $('pFirst').value=profile.first_name||''; $('pLast').value=profile.last_name||''; $('pUsername').value=profile.username||''; $('pCity').value=profile.city||''; $('pBio').value=profile.bio||'';
+      $('profileName').textContent=`${profile.first_name||''} ${profile.last_name||''}`;
+      $('profileMeta').textContent=`@${profile.username||''} · ${profile.city||''}`;
+      $('profileBio').textContent=profile.bio||'Pas encore de bio.';
+      setAvatar($('topAvatar'),profile); setAvatar($('profileAvatar'),profile,true);
+    }
+
+    $('profileForm').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      let avatar_url = profile?.avatar_url || null;
+      const file=$('pAvatarFile').files[0];
+      if(file){
+        const ext=file.name.split('.').pop();
+        const path=`${currentUser.id}/avatar-${Date.now()}.${ext}`;
+        const {error:upErr}=await supabaseClient.storage.from('avatars').upload(path,file,{upsert:true});
+        if(upErr) return toast(upErr.message);
+        const {data}=supabaseClient.storage.from('avatars').getPublicUrl(path);
+        avatar_url=data.publicUrl;
+      }
+      const payload={id:currentUser.id,first_name:$('pFirst').value.trim(),last_name:$('pLast').value.trim(),username:$('pUsername').value.trim().toLowerCase(),city:$('pCity').value.trim(),bio:$('pBio').value.trim(),avatar_url,updated_at:new Date().toISOString()};
+      const {error}=await supabaseClient.from('profiles').upsert(payload);
+      if(error) return toast(error.message);
+      toast('Profil enregistré'); await loadProfile(); navigate('home');
+    });
+
+    async function logout(){ await supabaseClient.auth.signOut(); location.href=location.pathname; }
+
+    document.querySelectorAll('.navbtn').forEach(b=>b.onclick=()=>navigate(b.dataset.view));
+    function navigate(view){
+      document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));
+      $('view-'+view)?.classList.remove('hidden');
+      document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
+      if(view==='favorites') loadFavorites();
+      if(view==='chat') { loadConversations(); loadFriendRequests(); loadFriends(); }
+    }
+
+    async function loadOutings(){
+      const {data,error}=await supabaseClient.from('outings').select('*').order('created_at',{ascending:false});
+      if(error) return toast(error.message);
+      outingsCache=data||[];
+      $('inviteOuting').innerHTML=outingsCache.map(o=>`<option value="${o.id}">${o.name} · ${o.city}</option>`).join('');
+    }
+
+    function scoreOuting(o,q){
+      let s=0;
+      if((o.city||'').toLowerCase()===(q.city||'').toLowerCase()) s+=3;
+      if(o.mood===q.mood) s+=2;
+      if(o.budget_category===q.budget) s+=2;
+      if(o.moment===q.moment) s+=1;
+      if(o.transport===q.transport) s+=1;
+      if(o.companion_type===q.companion) s+=1;
+      return s;
+    }
+    async function loadRecommendations(){
+      if(!outingsCache.length) await loadOutings();
+      const q={city:$('qCity').value.trim(),mood:$('qMood').value,budget:$('qBudget').value,companion:$('qCompanion').value,moment:$('qMoment').value,transport:$('qTransport').value};
+      const best=[...outingsCache].map(o=>({...o,_score:scoreOuting(o,q)})).sort((a,b)=>b._score-a._score).slice(0,5);
+      $('recommendations').innerHTML=best.map(o=>outingCard(o,true)).join('');
+    }
+    async function surpriseMe(){
+      await loadOutings();
+      const pick=outingsCache[Math.floor(Math.random()*outingsCache.length)];
+      navigate('outings'); $('recommendations').innerHTML=outingCard({...pick,_score:'surprise'},true);
+    }
+    function outingCard(o, actions=false){
+      return `<article class="card outing-card">
+        <div class="outing-head"><div><div class="outing-title">${o.name}</div><div class="muted">${o.type} · ${o.city}</div></div><span class="pill">score ${o._score ?? '—'}</span></div>
+        <div><span class="pill">🎭 ${o.mood}</span> <span class="pill">💸 ${o.budget_category}</span> <span class="pill">📍 ${o.distance_label}</span></div>
+        <p>${o.description}</p><div class="why"><b>Pourquoi ça colle :</b> correspond à ton mood, ton budget ou ta zone selon le score.</div>
+        ${actions?`<div class="actions"><a class="btn light" href="${o.maps_url||'#'}" target="_blank" rel="noopener">Y aller</a><button class="btn ghost" onclick="saveFavorite('${o.id}')">Sauvegarder</button><button class="btn primary" onclick="openInviteModal('${o.id}')">Inviter un ami</button></div>`:''}
+      </article>`;
+    }
+
+    async function saveFavorite(outingId){
+      const {error}=await supabaseClient.from('favorites').insert({user_id:currentUser.id,outing_id:outingId});
+      if(error && !error.message.includes('duplicate')) return toast(error.message);
+      toast('Ajouté aux favoris');
+    }
+    async function loadFavorites(){
+      const {data,error}=await supabaseClient.from('favorites').select('id, outing:outings(*)').eq('user_id',currentUser.id).order('created_at',{ascending:false});
+      if(error) return toast(error.message);
+      $('favoritesList').innerHTML=(data||[]).length ? data.map(f=>outingCard(f.outing,false)+`<button class="btn danger" onclick="removeFavorite('${f.id}')">Retirer</button>`).join('') : '<p class="muted">Aucun favori pour le moment.</p>';
+    }
+    async function removeFavorite(id){ const {error}=await supabaseClient.from('favorites').delete().eq('id',id); if(error) toast(error.message); else loadFavorites(); }
+
+    function openInviteModal(outingId=''){ $('inviteModal').classList.add('show'); if(outingId) $('inviteOuting').value=outingId; loadFriends(); }
+    function closeInviteModal(){ $('inviteModal').classList.remove('show'); }
+    async function createInvitation(){
+      const outing_id=$('inviteOuting').value, receiver_id=$('inviteFriend').value||null, guest_name=$('inviteGuest').value.trim()||null, message=$('inviteMessage').value.trim();
+      const invite_token=crypto.randomUUID();
+      const {data:inv,error}=await supabaseClient.from('invitations').insert({sender_id:currentUser.id,receiver_id,guest_name,outing_id,invite_token,message,status:'pending'}).select('*').single();
+      if(error) return toast(error.message);
+      const otherName = receiver_id ? friendsCache.find(f=>f.friend_id===receiver_id)?.friend?.first_name : guest_name;
+      const {data:conv}=await supabaseClient.from('conversations').insert({user1_id:currentUser.id,user2_id:receiver_id,guest_name:otherName,invitation_id:inv.id}).select('*').single();
+      const outing=outingsCache.find(o=>o.id===outing_id);
+      if(conv) await supabaseClient.from('messages').insert({conversation_id:conv.id,sender_id:currentUser.id,system_message:true,content:`Tu as invité ${otherName||'un ami'} à : ${outing?.name||'une sortie'}. Invitation en attente.`});
+      const url=`${location.origin}${location.pathname}?invite=${invite_token}`;
+      $('inviteLink').value=url; $('inviteLinkBox').classList.remove('hidden'); toast('Lien créé');
+    }
+    function copyInviteLink(){ navigator.clipboard.writeText($('inviteLink').value); toast('Lien copié'); }
+    async function shareInviteLink(){ const url=$('inviteLink').value; if(navigator.share) await navigator.share({title:'SortirCeSoir',text:'Tu viens sortir ?',url}); else copyInviteLink(); }
+
+    async function showPublicInvite(token){
+      $('authShell').classList.remove('active'); $('appShell').classList.remove('active'); $('bottomNav').classList.add('hidden'); $('inviteShell').classList.add('active');
+      const {data,error}=await supabaseClient.rpc('get_invitation_by_token',{p_token:token});
+      if(error || !data?.length){ $('invitePublicContent').innerHTML='<p>Invitation introuvable ou expirée.</p>'; return; }
+      const inv=data[0];
+      $('invitePublicContent').innerHTML=`<h1 style="font-size:2rem">${inv.sender_first_name} t’invite 🌙</h1>
+        <div class="card" style="box-shadow:none"><h2>${inv.outing_name}</h2><p class="muted">${inv.outing_city} · ${inv.outing_type} · ${inv.outing_moment}</p><p>${inv.outing_description}</p><p><b>Message :</b> ${inv.message||'—'}</p></div>
+        <div class="field"><label>Ton prénom si tu n’as pas de compte</label><input id="guestResponder" class="input" placeholder="Lucas"></div>
+        <div class="actions"><button class="btn primary" onclick="respondInvite('${token}','accepted')">Oui, je suis partant</button><button class="btn danger" onclick="respondInvite('${token}','declined')">Non, je ne peux pas</button></div>`;
+    }
+    async function respondInvite(token,status){
+      const guest_name=$('guestResponder')?.value.trim()||null;
+      const {data:{session}}=await supabaseClient.auth.getSession();
+      const {error}=await supabaseClient.rpc('respond_to_invitation',{p_token:token,p_status:status,p_guest_name:guest_name,p_responder_id:session?.user?.id||null});
+      if(error) return toast(error.message);
+      $('invitePublicContent').innerHTML=`<h2>Réponse envoyée ✅</h2><p>Merci, l’invitation a été mise à jour.</p><button class="btn primary" onclick="location.href=location.pathname">Ouvrir SortirCeSoir</button>`;
+    }
+
+    async function searchUser(){
+      const q=$('friendSearch').value.trim().toLowerCase();
+      const {data,error}=await supabaseClient.from('profiles_public').select('*').ilike('username',`%${q}%`).neq('id',currentUser.id).limit(5);
+      if(error) return toast(error.message);
+      $('friendSearchResult').innerHTML=(data||[]).map(u=>`<div class="conversation between"><div><b>@${u.username}</b><br><span class="muted">${u.first_name} · ${u.city}</span></div><button class="btn primary" onclick="sendFriendRequest('${u.id}')">Ajouter</button></div>`).join('')||'<p class="muted">Aucun utilisateur trouvé.</p>';
+    }
+    async function sendFriendRequest(receiver_id){
+      const {error}=await supabaseClient.from('friend_requests').insert({sender_id:currentUser.id,receiver_id,status:'pending'});
+      if(error) return toast(error.message); toast('Demande envoyée');
+    }
+    async function loadFriendRequests(){
+      const {data}=await supabaseClient.from('friend_requests').select('*, sender:profiles!friend_requests_sender_id_fkey(id,first_name,last_name,username)').eq('receiver_id',currentUser.id).eq('status','pending');
+      $('friendRequests').innerHTML=(data||[]).map(r=>`<div class="conversation between"><span>${r.sender.first_name} (@${r.sender.username}) veut t’ajouter.</span><span><button class="btn primary" onclick="answerFriend('${r.id}','accepted','${r.sender_id}')">Accepter</button> <button class="btn danger" onclick="answerFriend('${r.id}','declined','${r.sender_id}')">Refuser</button></span></div>`).join('');
+    }
+    async function answerFriend(id,status,sender_id){
+      await supabaseClient.from('friend_requests').update({status,updated_at:new Date().toISOString()}).eq('id',id);
+      if(status==='accepted'){
+        await supabaseClient.from('friendships').insert([{user_id:currentUser.id,friend_id:sender_id},{user_id:sender_id,friend_id:currentUser.id}]);
+      }
+      await loadFriendRequests(); await loadFriends();
+    }
+    async function loadFriends(){
+      const {data}=await supabaseClient.from('friendships').select('friend_id, friend:profiles!friendships_friend_id_fkey(id,first_name,last_name,username,city)').eq('user_id',currentUser?.id||'');
+      friendsCache=data||[];
+      $('friendsList').innerHTML=friendsCache.map(f=>`<div class="conversation between"><span>${f.friend.first_name} @${f.friend.username}</span><button class="btn ghost" onclick="openInviteModal(); $('inviteFriend').value='${f.friend_id}'">Inviter</button></div>`).join('');
+      $('inviteFriend').innerHTML='<option value="">Lien public / invité sans compte</option>'+friendsCache.map(f=>`<option value="${f.friend_id}">${f.friend.first_name} @${f.friend.username}</option>`).join('');
+    }
+
+    async function loadConversations(){
+      const {data,error}=await supabaseClient.from('conversations').select('*, messages(*), user1:profiles!conversations_user1_id_fkey(first_name,username), user2:profiles!conversations_user2_id_fkey(first_name,username)').or(`user1_id.eq.${currentUser.id},user2_id.eq.${currentUser.id}`).order('created_at',{ascending:false});
+      if(error) return toast(error.message);
+      let unread=0;
+      $('conversationsList').innerHTML=(data||[]).map(c=>{
+        const msgs=(c.messages||[]).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+        unread += msgs.filter(m=>!m.read_at && m.sender_id!==currentUser.id).length;
+        const title=c.user1_id===currentUser.id ? (c.user2?.first_name||c.guest_name||'Invité') : c.user1?.first_name;
+        return `<div class="conversation"><div class="between"><b>${title}</b><span class="pill">${msgs.length} msg</span></div>${msgs.slice(-5).map(m=>`<div class="msg ${m.system_message?'system':(m.sender_id===currentUser.id?'mine':'')}">${m.content}</div>`).join('')}</div>`;
+      }).join('') || '<p class="muted">Aucune conversation.</p>';
+      $('homeNotifications').innerHTML=(data||[]).slice(0,3).map(c=>`<div class="conversation">${(c.messages||[]).slice(-1)[0]?.content||'Invitation créée'}</div>`).join('') || '<p class="muted">Pas encore de notification.</p>';
+      $('chatBadge').textContent=unread; $('chatBadge').classList.toggle('show',unread>0);
+    }
+    async function markAllRead(){
+      const {data}=await supabaseClient.from('conversations').select('id').or(`user1_id.eq.${currentUser.id},user2_id.eq.${currentUser.id}`);
+      const ids=(data||[]).map(c=>c.id);
+      if(ids.length) await supabaseClient.from('messages').update({read_at:new Date().toISOString()}).in('conversation_id',ids).neq('sender_id',currentUser.id);
+      loadConversations();
+    }
+    function subscribeRealtime(){
+      if(realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
+      realtimeChannel=supabaseClient.channel('sortircesoir-live')
+        .on('postgres_changes',{event:'*',schema:'public',table:'messages'},()=>loadConversations())
+        .on('postgres_changes',{event:'*',schema:'public',table:'invitations'},()=>loadConversations())
+        .on('postgres_changes',{event:'*',schema:'public',table:'friend_requests'},()=>loadFriendRequests())
+        .subscribe();
+    }
+
+    function showInstallTip(){
+      if(localStorage.getItem('hideInstallTip')==='1') return;
+      if(!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) return;
+      $('installText').textContent=/iPhone|iPad|iPod/i.test(navigator.userAgent) ? 'Sur Safari : bouton Partager → Sur l’écran d’accueil.' : 'Sur Chrome : menu ⋮ → Ajouter à l’écran d’accueil.';
+      $('installTip').classList.remove('hidden');
+    }
+    $('installTip').querySelector('button').onclick=()=>{ localStorage.setItem('hideInstallTip','1'); $('installTip').classList.add('hidden'); };
+
+    if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+    init();
+  </script>
+</body>
+</html>
