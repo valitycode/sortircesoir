@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>SortirCeSoir</title>
+  <meta name="description" content="Découvre des sorties, partage tes coups de cœur et discute avec tes amis." />
+  <meta name="theme-color" content="#0b0b0f" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="SortirCeSoir" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="stylesheet" href="./style.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' rx='30' fill='%230b0b0f'/%3E%3Ctext x='64' y='78' text-anchor='middle' font-size='58'%3E🌙%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+  <div id="toast" class="toast"></div>
+
+  <main class="app">
+    <!-- Auth -->
+    <section id="authShell" class="auth-shell active">
+      <div class="auth-card">
+        <div class="auth-logo">🌙</div>
+        <h1>SortirCeSoir</h1>
+        <p>Trouve une sortie, partage tes photos et organise-toi avec tes amis.</p>
+
+        <div class="auth-tabs">
+          <button class="active" data-auth-tab="login">Connexion</button>
+          <button data-auth-tab="signup">Inscription</button>
+        </div>
+
+        <form id="authForm">
+          <input id="authEmail" type="email" placeholder="Email" required />
+          <input id="authPassword" type="password" placeholder="Mot de passe" minlength="6" required />
+          <button id="authSubmit" class="btn primary">Se connecter</button>
+        </form>
+        <small>Après inscription, crée ton profil pour utiliser les invitations, le chat et Découvrir.</small>
+      </div>
+    </section>
+
+    <!-- Invitation publique -->
+    <section id="inviteShell" class="public-shell hidden">
+      <div class="public-card">
+        <div class="mini-brand">💌 Invitation à sortir</div>
+        <div id="invitePublicContent"></div>
+      </div>
+    </section>
+
+    <!-- App -->
+    <section id="appShell" class="app-shell hidden">
+      <header class="topbar">
+        <div class="brand"><span>🌙</span><b>SortirCeSoir</b></div>
+        <button id="topProfileBtn" class="avatar-btn" data-view-target="profile"></button>
+      </header>
+
+      <!-- Accueil -->
+      <section id="view-home" class="view active">
+        <div class="hero-card">
+          <p id="welcome">Bonsoir 👋</p>
+          <h2>Découvre où sortir ce soir.</h2>
+          <div class="hero-actions">
+            <button class="btn primary" data-view-target="discover">Découvrir</button>
+            <button class="btn dark" data-view-target="outings">Trouver une sortie</button>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <h3>Dernières actus</h3>
+          <button class="text-btn" data-view-target="chat">Voir discussions</button>
+        </div>
+        <div id="homeNotifications" class="list"></div>
+      </section>
+
+      <!-- Découvrir -->
+      <section id="view-discover" class="view hidden">
+        <div class="section-head sticky-head">
+          <div>
+            <h2>Découvrir</h2>
+            <p>Photos, avis et activités partagées par la communauté.</p>
+          </div>
+          <button class="round-btn" id="openCreatePostBtn">＋</button>
+        </div>
+
+        <div class="filter-row">
+          <button class="chip active" data-discover-filter="all">Tout</button>
+          <button class="chip" data-discover-filter="restaurant">Restos</button>
+          <button class="chip" data-discover-filter="bar">Bars</button>
+          <button class="chip" data-discover-filter="culture">Culture</button>
+          <button class="chip" data-discover-filter="sport">Sport</button>
+        </div>
+
+        <div id="discoverFeed" class="discover-feed"></div>
+      </section>
+
+      <!-- Sorties -->
+      <section id="view-outings" class="view hidden">
+        <div class="section-head">
+          <div>
+            <h2>Sorties</h2>
+            <p>Recherche un établissement ou ajoute-le s’il n’existe pas.</p>
+          </div>
+        </div>
+
+        <div class="card search-card">
+          <input id="establishmentSearch" placeholder="Nom d’un établissement, ex : Comedy Club" />
+          <button class="btn dark" id="searchEstablishmentBtn">Rechercher</button>
+        </div>
+        <div id="establishmentResults" class="list"></div>
+
+        <div class="card">
+          <h3>Ajouter un établissement</h3>
+          <form id="establishmentForm" class="form-grid">
+            <input id="estName" placeholder="Nom" required />
+            <input id="estCity" placeholder="Ville" required />
+            <input id="estAddress" placeholder="Adresse" required />
+            <select id="estType">
+              <option value="restaurant">Restaurant</option>
+              <option value="bar">Bar</option>
+              <option value="culture">Culture</option>
+              <option value="sport">Sport</option>
+              <option value="insolite">Insolite</option>
+              <option value="autre">Autre</option>
+            </select>
+            <input id="estBudget" placeholder="Budget, ex : 10–30 €" />
+            <input id="estMaps" placeholder="Lien Google Maps facultatif" />
+            <textarea id="estDescription" placeholder="Description courte"></textarea>
+            <button class="btn primary">Ajouter</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Favoris -->
+      <section id="view-favorites" class="view hidden">
+        <div class="section-head">
+          <h2>Favoris</h2>
+          <button class="text-btn" id="refreshFavoritesBtn">Actualiser</button>
+        </div>
+        <div id="favoritesList" class="list"></div>
+      </section>
+
+      <!-- Discussion -->
+      <section id="view-chat" class="view hidden">
+        <div class="section-head">
+          <h2>Discussion</h2>
+          <button class="round-btn" id="openFriendPanelBtn">＋</button>
+        </div>
+        <div id="conversationsList" class="conversation-list"></div>
+      </section>
+
+      <!-- Profil -->
+      <section id="view-profile" class="view hidden">
+        <div class="profile-cover">
+          <button id="settingsBtn" class="settings-btn">⚙️</button>
+          <div id="profileAvatar" class="profile-avatar"></div>
+          <h2 id="profileName"></h2>
+          <p id="profileMeta"></p>
+          <p id="profileBio"></p>
+
+          <div class="stats-grid">
+            <div><b id="statFollowers">0</b><span>Abonnés</span></div>
+            <div><b id="statLikes">0</b><span>Likes</span></div>
+            <div><b id="statProfileViews">0</b><span>Vues profil</span></div>
+            <div><b id="statMediaViews">0</b><span>Vues médias</span></div>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <h3>Mes publications</h3>
+          <button class="text-btn" id="profileNewPostBtn">Publier</button>
+        </div>
+        <div id="myPostsGrid" class="profile-post-grid"></div>
+      </section>
+    </section>
+  </main>
+
+  <!-- Bottom nav -->
+  <nav id="bottomNav" class="bottom-nav hidden">
+    <button class="active" data-view-target="home"><span>🏠</span>Accueil</button>
+    <button data-view-target="discover"><span>🔎</span>Découvrir</button>
+    <button data-view-target="outings"><span>✨</span>Sorties</button>
+    <button data-view-target="chat"><span>💬</span>Chat<b id="chatBadge" class="badge">0</b></button>
+    <button data-view-target="profile"><span>👤</span>Profil</button>
+  </nav>
+
+  <!-- Modal publication -->
+  <div id="postModal" class="modal">
+    <div class="sheet">
+      <div class="sheet-head">
+        <h3>Nouvelle publication</h3>
+        <button class="icon-btn" data-close-modal="postModal">×</button>
+      </div>
+      <form id="postForm" class="form-grid">
+        <input id="postTitle" placeholder="Titre, ex : Super rooftop ce soir" required />
+        <input id="postCity" placeholder="Ville" required />
+        <input id="postAddress" placeholder="Adresse" />
+        <select id="postType">
+          <option value="bar">Bar</option>
+          <option value="restaurant">Restaurant</option>
+          <option value="culture">Culture</option>
+          <option value="sport">Sport</option>
+          <option value="insolite">Insolite</option>
+          <option value="autre">Autre</option>
+        </select>
+        <input id="postImageUrl" placeholder="Image internet facultative : https://..." />
+        <input id="postPhotoFile" type="file" accept="image/*" />
+        <textarea id="postCaption" placeholder="Ton avis, l’ambiance, le prix, pourquoi tu recommandes..."></textarea>
+        <input id="postRating" type="number" min="1" max="5" placeholder="Note /5 facultative" />
+        <button class="btn primary">Publier</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal paramètres profil -->
+  <div id="settingsModal" class="modal">
+    <div class="sheet">
+      <div class="sheet-head">
+        <h3>Paramètres du profil</h3>
+        <button class="icon-btn" data-close-modal="settingsModal">×</button>
+      </div>
+      <form id="profileForm" class="form-grid">
+        <input id="pFirst" placeholder="Prénom" required />
+        <input id="pLast" placeholder="Nom" required />
+        <input id="pUsername" placeholder="Pseudo" required />
+        <input id="pCity" placeholder="Ville" required />
+        <textarea id="pBio" placeholder="Bio courte"></textarea>
+        <input id="pAvatarFile" type="file" accept="image/*" />
+        <button class="btn primary">Enregistrer</button>
+        <button type="button" class="btn danger" id="logoutBtn">Déconnexion</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal amis -->
+  <div id="friendsModal" class="modal">
+    <div class="sheet">
+      <div class="sheet-head">
+        <h3>Amis</h3>
+        <button class="icon-btn" data-close-modal="friendsModal">×</button>
+      </div>
+      <div class="search-card card">
+        <input id="friendSearch" placeholder="Rechercher par pseudo" />
+        <button class="btn dark" id="searchFriendBtn">Chercher</button>
+      </div>
+      <div id="friendSearchResult" class="list"></div>
+      <h4>Demandes reçues</h4>
+      <div id="friendRequests" class="list"></div>
+      <h4>Mes amis</h4>
+      <div id="friendsList" class="list"></div>
+    </div>
+  </div>
+
+  <!-- Modal chat -->
+  <div id="chatModal" class="modal full">
+    <div class="chat-sheet">
+      <div class="chat-head">
+        <button class="icon-btn" data-close-modal="chatModal">‹</button>
+        <div>
+          <h3 id="chatTitle">Conversation</h3>
+          <small id="chatSubtitle"></small>
+        </div>
+        <button id="chatDeleteBtn" class="icon-btn">🗑️</button>
+      </div>
+      <div id="messagesList" class="messages-list"></div>
+      <form id="messageForm" class="message-form">
+        <button type="button" id="attachMenuBtn" class="icon-btn">＋</button>
+        <input id="messageInput" placeholder="Message..." autocomplete="off" />
+        <button class="send-btn">Envoyer</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal suppression conversation -->
+  <div id="deleteConversationModal" class="modal">
+    <div class="sheet small">
+      <div class="sheet-head">
+        <h3>Supprimer la conversation</h3>
+        <button class="icon-btn" data-close-modal="deleteConversationModal">×</button>
+      </div>
+      <p>Tu veux supprimer cette conversation seulement pour toi ou pour les deux ?</p>
+      <button id="deleteForMeBtn" class="btn dark full-btn">Supprimer pour moi</button>
+      <button id="deleteForAllBtn" class="btn danger full-btn">Supprimer pour les deux</button>
+    </div>
+  </div>
+
+  <!-- Modal actions partage -->
+  <div id="shareModal" class="modal">
+    <div class="sheet small">
+      <div class="sheet-head">
+        <h3>Envoyer à un ami</h3>
+        <button class="icon-btn" data-close-modal="shareModal">×</button>
+      </div>
+      <div id="shareFriendsList" class="list"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
